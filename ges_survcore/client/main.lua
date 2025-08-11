@@ -26,4 +26,3 @@ GES_Temp.Init()
 if Config.Features.Heat then GES_Heat.Init() end
 if Config.Features.Wetness then GES_Wetness.Init() end
 if Config.Features.Blizzard then GES_Blizzard.Init() end
-if Config.Features.HUDDemo then GES_HUD.Init() end

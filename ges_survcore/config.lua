@@ -18,8 +18,7 @@ Config = {
     Features = {
         Wetness = true,
         Heat = true,
-        Blizzard = true,
-        HUDDemo = true
+        Blizzard = true
     },
     Blizzard = {
         ExternalWeather = { 'renewed-weathersync' }

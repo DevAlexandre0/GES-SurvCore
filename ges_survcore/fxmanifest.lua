@@ -15,7 +15,6 @@ client_scripts {
     'client/modules/wetness.lua',
     'client/modules/heat.lua',
     'client/modules/blizzard.lua',
-    'client/modules/hud_demo.lua',
     'client/ports.lua',
     'client/main.lua'
 }
