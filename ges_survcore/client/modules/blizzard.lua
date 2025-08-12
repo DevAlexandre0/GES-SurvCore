@@ -18,8 +18,12 @@ function GES_Blizzard.Start(intensity, duration)
     intensity = Util.Clamp(intensity or 1.0, 0.0, 1.0)
     duration = duration or 60
     if GES_Blizzard.extWeather then
-        -- external weather sync placeholder
-        -- exports[GES_Blizzard.extWeather]:setBlizzard(intensity, duration)
+        local ok, err = pcall(function()
+            exports[GES_Blizzard.extWeather]:setBlizzard(intensity, duration)
+        end)
+        if not ok then
+            Util.Log('WARN', 'External weather blizzard call failed: ' .. tostring(err))
+        end
     else
         SetWeatherTypeOverTime('XMAS', 1.0)
         SetWindSpeed(intensity * 10.0)

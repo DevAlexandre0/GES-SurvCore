@@ -20,3 +20,18 @@ end
 function Util.TryResource(name)
     return GetResourceState(name) == 'started'
 end
+
+-- framework and ox compatibility helpers
+function Util.DetectFramework()
+    local esx = rawget(exports, 'es_extended') and exports['es_extended']:getSharedObject()
+    if esx then return 'ESX', esx end
+    local qb = rawget(exports, 'qb-core') and exports['qb-core']:GetCoreObject()
+    if qb then return 'QBCore', qb end
+    return 'Standalone', nil
+end
+
+function Util.GetOxResource(name)
+    if GetResourceState(name) == 'started' then
+        return exports[name]
+    end
+end
