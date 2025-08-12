@@ -2,32 +2,34 @@
 GES_Temp = { state = { temp = 0, feelsLike = 0, tier = 0, isIndoors = false }, mode = 'internal', externalRes = nil }
 
 local tickMs = 2000
+local weatherXmas = GetHashKey('XMAS')
+local weatherSnow = GetHashKey('SNOW')
+local tiers = Config.Temperature.Tiers or { {-15,3}, {-5,2}, {5,1} }
 
 local function computeTier(feel)
-    local tiers = Config.Temperature.Tiers or { {-15,3}, {-5,2}, {5,1} }
-    local t = 0
     for _,v in ipairs(tiers) do
-        if feel <= v[1] then t = v[2] end
+        if feel <= v[1] then
+            return v[2]
+        end
     end
-    return t
+    return 0
 end
 
 local function internal()
     local temp = 0
     local weather = GetPrevWeatherTypeHashName()
-    if weather == GetHashKey('XMAS') or weather == GetHashKey('SNOW') then temp = temp - 5 end
+    if weather == weatherXmas or weather == weatherSnow then temp = temp - 5 end
     local hour = GetClockHours()
     if hour < 6 or hour > 20 then temp = temp - 5 end
     local wind = GetWindSpeed()
     local feels = temp - wind * 0.2 - (GES_Blizzard and GES_Blizzard.intensity or 0) * 5.0
-    GES_Temp.state = {
-        temp = temp,
-        feelsLike = feels,
-        windChill = feels - temp,
-        humidity = 50,
-        windSpeed = wind,
-        isIndoors = false
-    }
+    local s = GES_Temp.state
+    s.temp = temp
+    s.feelsLike = feels
+    s.windChill = feels - temp
+    s.humidity = 50
+    s.windSpeed = wind
+    s.isIndoors = false
 end
 
 local function external()
@@ -35,15 +37,14 @@ local function external()
         return exports[GES_Temp.externalRes]:getTemperatureData()
     end)
     if ok and type(data) == 'table' then
-        GES_Temp.state = {
-            temp = data.temperature or 0,
-            feelsLike = data.feelsLike or data.perceived or data.temperature or 0,
-            windChill = data.windChill,
-            humidity = data.humidity,
-            windSpeed = data.windSpeed,
-            isIndoors = data.isIndoors,
-            biome = data.biome
-        }
+        local s = GES_Temp.state
+        s.temp = data.temperature or 0
+        s.feelsLike = data.feelsLike or data.perceived or data.temperature or 0
+        s.windChill = data.windChill
+        s.humidity = data.humidity
+        s.windSpeed = data.windSpeed
+        s.isIndoors = data.isIndoors
+        s.biome = data.biome
     else
         Util.Log('WARN', 'Temperature external failed, switching to internal')
         GES_Temp.mode = 'internal'
@@ -64,7 +65,6 @@ local function detectExternal()
         else
             if Config.Core.Strict and not Config.Core.AllowFallback then
                 Util.Log('ERROR', 'External temperature resource not found')
-                StopResource(GetCurrentResourceName())
                 return false
             else
                 Util.Log('WARN', 'External temperature resource not found, using internal')

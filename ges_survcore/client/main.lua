@@ -1,6 +1,16 @@
 -- client entry
 local resource = GetCurrentResourceName()
 
+Framework = Framework or {}
+Framework.name, Framework.obj = Util.DetectFramework()
+Ox = {
+    lib = Util.GetOxResource('ox_lib'),
+    inventory = Util.GetOxResource('ox_inventory'),
+    mysql = Util.GetOxResource('oxmysql')
+}
+
+TempState = TempState or {}
+
 local function validate()
     if type(Config) ~= 'table' then
         Util.Log('ERROR', 'config.lua missing or invalid')
@@ -18,7 +28,7 @@ local function validate()
 end
 
 if not validate() then
-    StopResource(resource)
+    Util.Log('ERROR', 'Initialization failed')
     return
 end
 
@@ -26,3 +36,4 @@ GES_Temp.Init()
 if Config.Features.Heat then GES_Heat.Init() end
 if Config.Features.Wetness then GES_Wetness.Init() end
 if Config.Features.Blizzard then GES_Blizzard.Init() end
+

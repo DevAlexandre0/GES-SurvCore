@@ -3,8 +3,7 @@ GES_HUD = {}
 
 function GES_HUD.Init()
     CreateThread(function()
-        while true do
-            if not Config.Features.HUDDemo then return end
+        while Config.Features.HUDDemo do
             local temp = TempState and TempState.feelsLike or 0
             local wet = GES_Wetness and GES_Wetness.Get() or 0
             SetTextFont(0)
@@ -14,7 +13,7 @@ function GES_HUD.Init()
             BeginTextCommandDisplayText('STRING')
             AddTextComponentSubstringPlayerName(('Temp %.1f\nWet %.1f'):format(temp, wet))
             EndTextCommandDisplayText(0.005, 0.005)
-            Wait(0)
+            Wait(500)
         end
     end)
 end
